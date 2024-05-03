@@ -55,7 +55,7 @@ jobs:
         # build the Docker container
       - name: Build container
         run: |
-          docker build -t mlops-basics:latest . --progress=plain --no-cache
+          docker build -t mlops:latest . --progress=plain --no-cache
      
       
       - name: Push2ECR
