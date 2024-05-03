@@ -34,9 +34,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
         run: |
-          dvc pull src/project/prod/prod_artifacts/feat_pipeline.pkl.dvc --dir src/project/prod/prod_artifacts
-          dvc pull src/project/prod/prod_artifacts/feature_name.pkl.dvc --dir src/project/prod/prod_artifacts
-          dvc pull src/project/prod/prod_artifacts/random_forest_model.pkl.dvc --dir src/project/prod/prod_artifacts
+          dvc pull src/project/prod/prod_artifacts/feat_pipeline.pkl.dvc 
+          dvc pull src/project/prod/prod_artifacts/feature_name.pkl.dvc 
+          dvc pull src/project/prod/prod_artifacts/random_forest_model.pkl.dvc 
 
       - name: List Files
         run: ls -l src/project/prod/prod_artifacts
