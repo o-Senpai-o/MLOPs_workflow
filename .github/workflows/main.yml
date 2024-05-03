@@ -51,7 +51,7 @@ jobs:
       #     aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
 
-      -
+      
         # build the Docker container
       - name: Build container
         run: |
