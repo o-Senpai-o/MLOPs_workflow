@@ -79,7 +79,7 @@ def load_models():
     # the model is downloaded by using the DVC config files and will be downloaded 
     # to artifact store in /app directory of docker container
     # which we need to access thats it  
-    path = Path("prod_artifacts//model")
+    path = Path("prod_artifacts//random_forest_model.pkl")
 
 
     with open(path, 'rb') as file:

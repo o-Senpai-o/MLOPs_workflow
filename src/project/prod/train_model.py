@@ -41,7 +41,7 @@ model = RandomForestRegressor(
 model.fit(X_train, y_train)
 
 
-filename = 'F://machine learning//mlops//end to end machine learning pipeline//MLOPs_workflow//src//project//prod//random_forest_model'
+filename = 'F://machine learning//mlops//end to end machine learning pipeline//MLOPs_workflow//src//project//prod//prod_artifacts//random_forest_model.pkl'
 pickle.dump(model, open(filename, 'wb'))
  
  
