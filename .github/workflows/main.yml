@@ -17,6 +17,31 @@ jobs:
           
       - name: List Files
         run: ls -l
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: setup DVC
+        uses: iterative/setup-dvc@v1
+        
+      - name: fetch sklearn model sklearn pipeline pipeline features
+        env:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+        run: |
+          dvc pull src/project/prod/prod_artifacts/feat_pipeline.pkl.dvc --dir src/project/prod/prod_artifacts
+          dvc pull src/project/prod/prod_artifacts/feature_name.pkl.dvc --dir src/project/prod/prod_artifacts
+          dvc pull src/project/prod/prod_artifacts/random_forest_model.pkl.dvc --dir src/project/prod/prod_artifacts
+
+      - name: List Files
+        run: ls -l src/project/prod/prod_artifacts
+
+          
       #   # for use of aws features
       # - name: Configure AWS Credentials
       #   uses: aws-actions/configure-aws-credentials@v1
