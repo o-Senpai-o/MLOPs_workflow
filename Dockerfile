@@ -21,7 +21,7 @@ RUN pip install -r requirements.txt
 WORKDIR /app
 
 # copy everything from current directory to app directory in docker container
-COPY MLOPs_workflow/src/project/prod  /app/prod
+COPY src/project/prod  /app/prod
 
 WORKDIR /app/prod
 # Creates a non-root user with an explicit UID and adds permission to access the /app folder
