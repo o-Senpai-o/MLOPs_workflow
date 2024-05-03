@@ -65,4 +65,4 @@ jobs:
           access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           region: ${{ secrets.AWS_DEFAULT_REGION }}
-          image: mlops-basics:latest
+          image: mlops:latest
