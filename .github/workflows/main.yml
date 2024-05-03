@@ -1,0 +1,68 @@
+name: Create Docker Container
+
+on: [push]
+
+jobs:
+  mlops-container:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+    steps:
+        # This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          
+      # - name: List Files
+      #   run: ls -l
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: setup DVC
+        uses: iterative/setup-dvc@v1
+        
+      - name: fetch sklearn model sklearn pipeline pipeline features
+        env:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+        run: |
+          dvc pull src/project/prod/prod_artifacts/feat_pipeline.pkl.dvc 
+          dvc pull src/project/prod/prod_artifacts/feature_name.pkl.dvc 
+          dvc pull src/project/prod/prod_artifacts/random_forest_model.pkl.dvc 
+
+      - name: List Files
+        run: ls -l src/project/prod/prod_artifacts
+
+          
+      #   # for use of aws features
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+
+      
+        # build the Docker container
+      - name: Build container
+        run: |
+          docker build -t mlops-basics:latest . --progress=plain --no-cache
+     
+      
+      - name: Push2ECR
+        id: ecr
+        uses: jwalton/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ${{ secrets.AWS_DEFAULT_REGION }}
+          image: mlops-basics:latest
