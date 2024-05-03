@@ -1,0 +1,4 @@
+data:
+  url : 'https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-dataa'
+  artifact_name : nyc_data.csv
+  artifact_loc : MLOPs_workflow\data\raw

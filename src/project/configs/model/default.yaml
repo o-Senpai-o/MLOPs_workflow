@@ -1,0 +1,20 @@
+models:
+  random_forest:
+    n_estimators: 150
+    max_depth: 15
+    min_samples_split: 4
+    min_samples_leaf: 3
+    # Here -1 means all available cores
+    n_jobs: -1
+    criterion: mae
+    max_features: 0.5
+    # DO not change the following
+    oob_score: true
+
+  
+
+# we need to define them in such a way so that we can make use of ray tune for hyperparameter Tuning
+# but yaar hum python notebook bhi dalenge na reference ke liye ke kya kya kuya hai exploration
+# and usmein feature transformation kya kya kiya hai
+# usmein hum hyperparameter transformation karenge and then best features idher dalenge na faltu kyu extra jhanjhat 
+# karna 

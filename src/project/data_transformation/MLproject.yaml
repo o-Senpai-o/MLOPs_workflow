@@ -1,0 +1,10 @@
+name: data transformation
+python_env: python_env.yaml
+
+entry_point:
+  main:
+    parameters:
+
+
+    command : >-
+      python transform.py 

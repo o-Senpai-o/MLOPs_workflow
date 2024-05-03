@@ -1,0 +1,1 @@
+# fetch model from mlflow registry

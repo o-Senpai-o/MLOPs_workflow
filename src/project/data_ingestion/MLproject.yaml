@@ -1,0 +1,30 @@
+name : download file
+python_env : python_env.yaml
+
+entry_point:
+  main:
+    parameters: 
+      url : 
+        description: the url from which data needs to be fetched
+        default:
+        type: string
+      
+      artifact_name :
+        description: The name by which the data needs to be stored
+        default: raw
+        type: string
+
+      # artifact_loc :
+      #   description: The location to upload the raw data into for further use
+      #   default: s3
+      #   type: string 
+    
+    command: "python run.py --url {url} --artifact_name {artifact_name}"
+
+
+
+
+
+
+
+  command : python run.py

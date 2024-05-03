@@ -1,0 +1,8 @@
+project: feast_feature_store
+# feast will store the feature registry in this directory
+registry: data/registry.db
+provider: local
+# feast will store the online features in this directory
+online_store:
+    path: data/online_store.db
+entity_key_serialization_version: 2

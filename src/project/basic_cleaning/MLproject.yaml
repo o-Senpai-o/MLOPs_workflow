@@ -1,0 +1,13 @@
+name : basic_cleaning
+python_env : python_env.yaml
+
+entry_point:
+  main:
+   parameters:
+
+    artifact_path: 
+      description: location of raw dataset
+      default: MLOPs_workflow//data//raw//AB_NYC_2019.csv
+
+   command: >-
+    python clean_main.py --artifact_path {artifact_path}
