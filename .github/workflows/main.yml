@@ -53,16 +53,45 @@ jobs:
 
       
         # build the Docker container
-      - name: Build container
-        run: |
-          docker build -t mlops:latest . --progress=plain --no-cache
+      # - name: Build container
+      #   run: |
+      #     docker build -t mlops:latest . --progress=plain --no-cache
      
       
-      - name: Push2ECR
-        id: ecr
-        uses: jwalton/gh-ecr-push@v1
+      # - name: Push2ECR
+      #   id: ecr
+      #   uses: jwalton/gh-ecr-push@v1
+      #   with:
+      #     access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      #     image: mlops:latest
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
         with:
-          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          region: ${{ secrets.AWS_DEFAULT_REGION }}
-          image: mlops:latest
+            context: .
+            push: true
+            tags: singh/images:app-${{ github.run_number }}
+      
+      #update the deployment file so that Argocd can track changes in the deployment file
+      
+      - name: modify the image
+        run: |
+          git config user.email $GIT_EMAIL
+          git config user.name $GIT_NAME
+          pwd
+          cat k8_/deployment.yaml
+          pwd
+          sed -i "s+singh/images.*+singh/images:app-$RUN_NUMBER+g" deployment.yaml
+          cat deployment.yaml
+          git add .
+          git commit -m 'Done  by Github Actions   Job changemanifest: ${{ github.run_number }}'
+          git push origin main
+        env:
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+          RUN_NUMBER: ${{ github.run_number }}
+          GIT_EMAIL : ${{ secrets.GIT_EMAIL }}
+          GIT_NAME : ${{ secrets.GIT_NAME }}

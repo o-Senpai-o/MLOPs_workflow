@@ -1,18 +1,46 @@
 import uvicorn
 import pickle
 import fastapi
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from typing import Annotated
 import pandas as pd
 
 
+from tempfile import NamedTemporaryFile
+from starlette.responses import FileResponse
+from starlette.requests import Request
+
 from utils import load_feature_transformation_pipeline, load_models
 from utils import delta_date_feature
+
+from fastapi.responses import HTMLResponse
+
 
 # from BankNote import nyc
 
 
 app = FastAPI()
+
+
+
+# HTML form for file upload
+html_form = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Upload Form</title>
+</head>
+<body>
+    <h2>Upload CSV File</h2>
+    <form action="/predict" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+</body>
+</html>
+"""
+
+
 
 
 #-------------------- takes input csv file and return output--------------
@@ -47,10 +75,16 @@ def predict(file: UploadFile):
     # we can return the predictions along with the data
     data["predictions"] = predictions
 
-    return data.to_json(orient="split")
+    # Create HTML table from DataFrame
+    html_table = data.to_html(index=False)
+
+    # Return HTML response with DataFrame table
+    return HTMLResponse(content=html_table)
 
 
-
+@app.get("/")
+async def main():
+    return HTMLResponse(content=html_form, status_code=200)
 
 
 

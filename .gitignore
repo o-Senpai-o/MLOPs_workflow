@@ -95,3 +95,7 @@ target/
 src/project/prod/prod_artifacts/random_forest_model.pkl
 src/project/prod/prod_artifacts/feat_pipeline.pkl
 src/project/prod/prod_artifacts/feature_name.pkl
+
+
+#loacl terraform files
+**/.terraform/*

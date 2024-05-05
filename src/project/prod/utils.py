@@ -66,6 +66,8 @@ def load_models():
     """
     loads the saved pickle file from the mlflow registry
     
+
+
     Args
         inputs :
         -----------
