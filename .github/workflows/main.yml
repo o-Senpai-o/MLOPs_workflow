@@ -72,11 +72,10 @@ jobs:
     needs: main
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        name: changing the deployment of git repo
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          repository: 'o-Senpai-o/MLOPs_workflow'
-          token: ${{ secrets.GIT_PASSWORD }}
+          ref: ${{ github.ref }}
       - name: modify the image
         run: |
             git config user.email $GIT_EMAIL
