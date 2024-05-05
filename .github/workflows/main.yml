@@ -55,7 +55,7 @@ jobs:
         # build the Docker container
       - name: Build container
         run: |
-          docker build -t singh/images:app-${{ github.run_number }} . --progress=plain --no-cache
+          docker build -t mlops/images:app-${{ github.run_number }} . --progress=plain --no-cache
      
       
       - name: Push2ECR
@@ -66,7 +66,7 @@ jobs:
           secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-          image: singh/images:app-${{ github.run_number }}
+          image: mlops/latest:app-${{ github.run_number }}
       
 
       # - name: Build and push
@@ -88,7 +88,7 @@ jobs:
           pwd
           cat k8_/deployment.yaml
           pwd
-          sed -i "s+singh/images.*+singh/images:app-$RUN_NUMBER+g" deployment.yaml
+          sed -i "s+mlops/latest.*+mlops/latest:app-$RUN_NUMBER+g" deployment.yaml
           cat deployment.yaml
           git add .
           git commit -m 'Done  by Github Actions   Job changemanifest: ${{ github.run_number }}'
