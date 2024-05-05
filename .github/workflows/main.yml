@@ -52,10 +52,10 @@ jobs:
 
 
       
-        # build the Docker container
-      # - name: Build container
-      #   run: |
-      #     docker build -t mlops:latest . --progress=plain --no-cache
+        build the Docker container
+      - name: Build container
+        run: |
+          docker build -t singh/images:app-${{ github.run_number }} . --progress=plain --no-cache
      
       
       - name: Push2ECR
