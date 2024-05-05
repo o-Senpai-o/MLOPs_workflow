@@ -3,7 +3,7 @@ name: Create Docker Container
 on: [push]
 
 jobs:
-  mlops-container:
+  main:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -81,21 +81,50 @@ jobs:
       
       #update the deployment file so that Argocd can track changes in the deployment file
       
+      # - name: modify the image
+      #   run: |
+      #     git config user.email $GIT_EMAIL
+      #     git config user.name $GIT_NAME
+      #     pwd
+      #     cat k8_/deployment.yaml
+      #     pwd
+      #     sed -i "s+mlops:.*+mlops:app-$RUN_NUMBER+g" k8_/deployment.yaml
+      #     cat k8_/deployment.yaml
+      #     git add .
+      #     git commit -m 'Done  by Github Actions   Job changemanifest: ${{ github.run_number }}'
+      #     git push 
+      #   env:
+      #     GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+      #     GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+      #     RUN_NUMBER: ${{ github.run_number }}
+      #     GIT_EMAIL : ${{ secrets.GIT_EMAIL }}
+      #     GIT_NAME : ${{ secrets.GIT_NAME }}
+
+
+  modifygit:
+    needs: main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: changing the deployment of git repo
+        with:
+          repository: 'o-Senpai-o/MLOPs_workflow'
+          token: ${{ secrets.GIT_PASSWORD }}
       - name: modify the image
-        run: |
-          git config user.email $GIT_EMAIL
-          git config user.name $GIT_NAME
-          pwd
-          cat k8_/deployment.yaml
-          pwd
-          sed -i "s+mlops:.*+mlops:app-$RUN_NUMBER+g" k8_/deployment.yaml
-          cat k8_/deployment.yaml
-          git add .
-          git commit -m 'Done  by Github Actions   Job changemanifest: ${{ github.run_number }}'
-          git push 
-        env:
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
-          RUN_NUMBER: ${{ github.run_number }}
-          GIT_EMAIL : ${{ secrets.GIT_EMAIL }}
-          GIT_NAME : ${{ secrets.GIT_NAME }}
+          run: |
+            git config user.email $GIT_EMAIL
+            git config user.name $GIT_NAME
+            pwd
+            cat k8_/deployment.yaml
+            pwd
+            sed -i "s+mlops:.*+mlops:app-$RUN_NUMBER+g" k8_/deployment.yaml
+            cat k8_/deployment.yaml
+            git add .
+            git commit -m 'Done  by Github Actions   Job changemanifest: ${{ github.run_number }}'
+            git push 
+          env:
+            GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+            GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+            RUN_NUMBER: ${{ github.run_number }}
+            GIT_EMAIL : ${{ secrets.GIT_EMAIL }}
+            GIT_NAME : ${{ secrets.GIT_NAME }}
