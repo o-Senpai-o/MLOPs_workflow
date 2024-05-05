@@ -52,7 +52,7 @@ jobs:
 
 
       
-        build the Docker container
+        # build the Docker container
       - name: Build container
         run: |
           docker build -t singh/images:app-${{ github.run_number }} . --progress=plain --no-cache
