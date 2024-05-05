@@ -42,13 +42,13 @@ jobs:
         run: ls -l src/project/prod/prod_artifacts
 
           
-      #   # for use of aws features
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+        # for use of aws features
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
 
       
@@ -71,6 +71,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
+            access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            region: ${{ secrets.AWS_DEFAULT_REGION }}
             context: .
             push: true
             tags: singh/images:app-${{ github.run_number }}
