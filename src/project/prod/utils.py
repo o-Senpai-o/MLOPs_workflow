@@ -12,19 +12,25 @@ from sklearn.model_selection import train_test_split
 
 from pathlib import Path
 import os
-import pickle
-
+# import pickle
+import dill
+from src.project.data_transformation.transform import delta_date_feature, ravel_text_column
 
 #------------------------------- Features pipeline -------------------------------------------
 
 def delta_date_feature(dates):
     """
-    Given a 2d array containing dates (in any format recognized by pd.to_datetime), it returns the delta in days
-    between each date and the most recent date in its column
+    Given a 2D array containing dates, returns the delta in days between each date 
+    and the most recent date in its column.
     """
-    date_sanitized = pd.DataFrame(dates).apply(pd.to_datetime)
-    return date_sanitized.apply(lambda d: (d.max() - d).dt.days, axis=0).to_numpy()
+    dates = pd.DataFrame(dates, columns=["last_review"])
+    dates['last_review'] = pd.to_datetime(dates["last_review"], format=f"%Y-%m-%d", errors="coerce")
 
+    max_dates = dates['last_review'].max()
+    return dates['last_review'].apply(lambda d : (max_dates - d)).dt.days.fillna(max_dates).to_numpy().reshape(-1, 1)
+
+def ravel_text_column(x):
+    return x.ravel()
 
 def load_feature_transformation_pipeline():
     """
@@ -44,21 +50,19 @@ def load_feature_transformation_pipeline():
 
     # first download the saved pipeline artifact from the dvc tracked 
 
-    pipe_artifact_path = Path("prod_artifacts//feat_pipeline.pkl")
-    pipe_feats_path = Path("prod_artifacts//feature_name.pkl")
+    artifact_path = Path(r"F:\machine learning\mlops\end to end machine learning pipeline\MLOPs_workflow\src\project\prod\prod_artifacts")
+    # pipe_feats_path = Path("F:\machine learning\mlops\end to end machine learning pipeline\MLOPs_workflow\src\project\prod\prod_artifacts\feat_pipeline.pkl")
 
-    with open(pipe_artifact_path, 'rb') as file:
-        feat_pipeline = pickle.load(file)
+    with open(artifact_path.joinpath("feat_pipeline.pkl"), 'rb') as pipe_file:
+        feat_pipeline = dill.load(pipe_file)
 
-    with open(pipe_feats_path, 'rb') as file:
-        pipeline_features = pickle.load(file)
+    with open(artifact_path.joinpath("feature_name"), 'rb') as feat_file:
+        pipeline_features = dill.load(feat_file)
 
     # get the feature names for the pipeline
     
     return feat_pipeline, pipeline_features
-
-
-
+   
 
 #----------------------------- Models ------------------------------------------------
 
@@ -81,11 +85,11 @@ def load_models():
     # the model is downloaded by using the DVC config files and will be downloaded 
     # to artifact store in /app directory of docker container
     # which we need to access thats it  
-    path = Path("prod_artifacts//random_forest_model.pkl")
+    path = Path(r"F:\machine learning\mlops\end to end machine learning pipeline\MLOPs_workflow\src\project\prod\prod_artifacts\random_forest_model.pkl")
 
 
     with open(path, 'rb') as file:
-        loaded_pickle_model =  pickle.load(file)
+        loaded_pickle_model =  dill.load(file)
 
     return loaded_pickle_model
 
@@ -93,6 +97,6 @@ def load_models():
 
 
 
-# print(load_feature_transformation_pipeline())
+load_feature_transformation_pipeline()
 
     

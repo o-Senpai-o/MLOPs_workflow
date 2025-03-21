@@ -12,7 +12,8 @@ from sklearn.model_selection import train_test_split
 
 from pathlib import Path
 import os
-import pickle
+# import pickle
+import dill  # Instead of pickle
 
     #--------------------------------------------------------------------------------------------------------------#
 
@@ -195,25 +196,33 @@ def data_process(path):
 
     if os.path.exists(artifact_path):
         # print(artifact_path)
+        # with open(artifact_path.joinpath("feat_pipeline.pkl"), "wb") as file:
+        #     pickle.dump(feature_transformation_pipeline, file)
         with open(artifact_path.joinpath("feat_pipeline.pkl"), "wb") as file:
-            pickle.dump(feature_transformation_pipeline, file)
-        
+            dill.dump(feature_transformation_pipeline, file)
         print("pipeline saved as pickle file")
+
     else:
+
         # make a directory first then open a file 
         os.makedirs(artifact_path)
         with open(artifact_path.joinpath("feat_pipeline.pkl"), 'wb') as file:
-            pickle.dump(feature_transformation_pipeline, file)
+            dill.dump(feature_transformation_pipeline, file)
 
         print("artifact directory created and pipeline saved as pickle file ")
     
 
-    # # we will also save the feature names
-    # features_path = Path("MLOPs_workflow//src//project//prod//prod_artifacts")
-    # with open(Path(features_path, "feature_name"), 'rb') as file:
-    #     pickle.dump(transformed_features, file)
+    # we will also save the feature names
+    features_path = artifact_path
+    if not os.path.isfile(Path(features_path, "feature_name")):
+        with open(Path(features_path, "feature_name"), 'wb') as file:
+            dill.dump(transformed_features, file)
+    else:
 
-    #? later we will track it using the feat pipeline
+        with open(Path(features_path, "feature_name"), 'rb') as file:
+            dill.dump(transformed_features, file)
+
+    # #? later we will track it using the feat pipeline
 
     # feature_transformed_data is a sparse matrix so we create a new dataframe
     features_df = pd.DataFrame(feature_transformed_data, columns= transformed_features)
@@ -238,6 +247,6 @@ def data_process(path):
 if __name__ == "__main__":
     data_path = Path("F://machine learning//mlops//end to end machine learning pipeline//MLOPs_workflow//data//raw//AB_NYC_2019.csv")
 
-    # data_process(data_path)
+    data_process(data_path)
 
 

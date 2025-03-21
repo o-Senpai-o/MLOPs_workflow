@@ -10,10 +10,11 @@ from tempfile import NamedTemporaryFile
 from starlette.responses import FileResponse
 from starlette.requests import Request
 
-from utils import load_feature_transformation_pipeline, load_models
-from utils import delta_date_feature
+from src.project.prod.utils import load_feature_transformation_pipeline, load_models
+from src.project.prod.utils import delta_date_feature, ravel_text_column
 
 from fastapi.responses import HTMLResponse
+
 
 
 app = FastAPI()
@@ -63,8 +64,12 @@ def predict(file: UploadFile):
     # get the machine learning model from mlflow registry
     random_model = load_models()
 
+    print("model loaded successfully")
+
     new_df = pd.DataFrame(transformed_feats, columns=pipeline_features)
     df = pd.concat([feat_id, new_df], axis=1)
+
+    print("dataset transformed successfully using sklearn pipeline")
 
     # now make predictions on the data 
     predictions = random_model.predict(df)
@@ -74,6 +79,8 @@ def predict(file: UploadFile):
 
     # Create HTML table from DataFrame
     html_table = data.to_html(index=False)
+
+    print("converted to html table")
 
     # Return HTML response with DataFrame table
     return HTMLResponse(content=html_table)
@@ -88,7 +95,7 @@ async def main():
 if __name__ == "__main__":
     # importing the user defined function here to overcome the 
     # AttributeError: Can't get attribute 'function' on <module '__main__' (built-in)>
-    from utils import delta_date_feature
+    # from utils import delta_date_feature
 
     # runs the app on localhost of container exposed at port 8000
     uvicorn.run(app = app, host = '127.0.0.1', port = 8000)
