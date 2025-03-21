@@ -14,56 +14,50 @@ from pathlib import Path
 import os
 import pickle
 
-#--------------------------------------------------------------------------------------------------------------#
-
-
+    #--------------------------------------------------------------------------------------------------------------#
 
 
 def delta_date_feature(dates):
     """
-    Given a 2d array containing dates (in any format recognized by pd.to_datetime), it returns the delta in days
-    between each date and the most recent date in its column
+    Given a 2D array containing dates, returns the delta in days between each date 
+    and the most recent date in its column.
     """
-    date_sanitized = pd.DataFrame(dates).apply(pd.to_datetime)
-    return date_sanitized.apply(lambda d: (d.max() - d).dt.days, axis=0).to_numpy()
+    dates = pd.DataFrame(dates, columns=["last_review"])
+    dates['last_review'] = pd.to_datetime(dates["last_review"], format=f"%Y-%m-%d", errors="coerce")
+
+    max_dates = dates['last_review'].max()
+    return dates['last_review'].apply(lambda d : (max_dates - d)).dt.days.fillna(max_dates).to_numpy().reshape(-1, 1)
+
+
+def ravel_text_column(x):
+    return x.ravel()
 
 def get_feature_transformation_pipeline():
     """
-    constructs the pipeline for feature transformation
+    Constructs a feature transformation pipeline.
 
-    parameters:
-
-    inputs:
-    -----------
-    
-    max_tdidf_features : 
-
-    output:
-    -----------
-    feature transformation pipeline
-
+    Returns:
+    --------
+    feature_transformation_pipeline : Pipeline
+        Scikit-learn pipeline for feature preprocessing.
+    processed_features : list
+        List of input features before transformation.
+    new_features : list
+        List of transformed feature names.
     """
-    
 
-    # Let's handle the categorical features first
+    # Categorical Features
     ordinal_categorical = ["room_type"]
     non_ordinal_categorical = ["neighbourhood_group"]
-    # NOTE: we do not need to impute room_type because the type of the room
-    # is mandatory on the websites, so missing values are not possible in production
-    # (nor during training). That is not true for neighbourhood_group
+
     ordinal_categorical_preproc = OrdinalEncoder()
 
-    
-    # Build a pipeline with two steps:
-    # 1 - A SimpleImputer(strategy="most_frequent") to impute missing values
-    # 2 - A OneHotEncoder() step to encode the variable
     non_ordinal_categorical_preproc = make_pipeline(
         SimpleImputer(strategy="most_frequent"),
-        OneHotEncoder()
+        OneHotEncoder(handle_unknown="ignore")
     )
 
-    # Let's impute the numerical columns to make sure we can handle missing values
-    # (note that we do not scale because the RF algorithm does not need that)
+    # Numerical Features with Zero Imputation
     zero_imputed = [
         "minimum_nights",
         "number_of_reviews",
@@ -75,29 +69,20 @@ def get_feature_transformation_pipeline():
     ]
     zero_imputer = SimpleImputer(strategy="constant", fill_value=0)
 
-    # A MINIMAL FEATURE ENGINEERING step:
-    # we create a feature that represents the number of days passed since the last review
-    # First we impute the missing review date with an old date (because there hasn't been
-    # a review for a long time), and then we create a new feature from it,
+    # Date Transformation
     date_imputer = make_pipeline(
         SimpleImputer(strategy='constant', fill_value='2010-01-01'),
-        FunctionTransformer(delta_date_feature, check_inverse=False, validate=False)
+        FunctionTransformer(delta_date_feature, validate=False)
     )
 
-    # Some minimal NLP for the "name" column
-    reshape_to_1d = FunctionTransformer(np.reshape, kw_args={"newshape": -1})
-
+    # Text Feature Engineering for 'name' column
     name_tfidf = make_pipeline(
         SimpleImputer(strategy="constant", fill_value=""),
-        reshape_to_1d,
-        TfidfVectorizer(
-            binary=False,
-            max_features = 5,
-            stop_words='english'
-        ),
+        FunctionTransformer(ravel_text_column, validate=False),  # Ensures 1D input for TF-IDF
+        TfidfVectorizer(binary=False, max_features=5, stop_words='english')
     )
 
-    # Let's put everything together
+    # Column Transformer
     preprocessor = ColumnTransformer(
         transformers=[
             ("ordinal_cat", ordinal_categorical_preproc, ordinal_categorical),
@@ -106,31 +91,26 @@ def get_feature_transformation_pipeline():
             ("transform_date", date_imputer, ["last_review"]),
             ("transform_name", name_tfidf, ["name"])
         ],
-        remainder="drop",  # This drops the columns that we do not transform
+        remainder="drop"  # Drops unused columns
     )
 
-
-    # list of features
+    # Feature Lists
     processed_features = ordinal_categorical + non_ordinal_categorical + zero_imputed + ["last_review", "name"]
 
-    # list of transformed features
-    new_features = ordinal_categorical + ['neighbourhood_group_Bronx','neighbourhood_group_Brooklyn','neighbourhood_group_Manhattan','neighbourhood_group_Queens', \
-                                                  'neighbourhood_group_Staten Island'] + zero_imputed + ['last_review'] + \
-                            ['apartment', 'bedroom', 'cozy', 'private', 'room']
+    new_features = ordinal_categorical + \
+                ['neighbourhood_group_Bronx', 'neighbourhood_group_Brooklyn', 
+                    'neighbourhood_group_Manhattan', 'neighbourhood_group_Queens', 
+                    'neighbourhood_group_Staten Island'] + \
+                zero_imputed + ['last_review'] + \
+                ['apartment', 'bedroom', 'cozy', 'private', 'room']
 
-    ######################################
-    # Create the inference pipeline. 
-    # The pipeline must have 2 steps: a step called "preprocessor" applying the
-    # ColumnTransformer instance that we saved in the `preprocessor` variable, 
-    # HINT: Use the explicit Pipeline constructor so you can assign the names to the steps, do not use make_pipeline
-    
+    # Final Pipeline
     feature_transformation_pipeline = Pipeline(
-        steps=[
-            ("preprocessor", preprocessor),             
-        ]
+        steps=[("preprocessor", preprocessor)]
     )
 
     return feature_transformation_pipeline, processed_features, new_features
+
 
 def create_feast_dataframe(data):
 

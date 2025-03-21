@@ -11,12 +11,6 @@ import pandas as pd
 from feast.infra.offline_stores.file_source import SavedDatasetFileStorage
 
 
-
-
-
-
-
-
 def getTrainDataFromFeatureStore():
     """
     retrieve the Training data from the feature store
@@ -67,7 +61,7 @@ def getTrainDataFromFeatureStore():
         ]
     )
 
-    # # # print(training_data)
+    print(training_data)
     # dataset = feature_store.create_saved_dataset(
     #     from_=training_data,
     #     name="NYC_dataset",
@@ -83,3 +77,4 @@ def getTrainDataFromFeatureStore():
 
 
 
+print(getTrainDataFromFeatureStore().head())

@@ -6,3 +6,5 @@ uvicorn
 pandas 
 scikit-learn
 numpy
+mlflow
+

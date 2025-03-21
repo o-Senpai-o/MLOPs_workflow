@@ -1,16 +1,20 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-# from feast_feature_store import getTrainDataFromFeatureStore
 # from fetch_model import getModel
 import os
 import shutil
 from sklearn.metrics import mean_absolute_error 
 import mlflow
 
+
+from src.project.feast_feature_store.feature_store import getTrainDataFromFeatureStore  
+
+
 #---------------------------------------------------------------------------------------------------------------
 
-from src.project.modelling.train import getTrainDataFromFeatureStore
+
+
 
 # def train(args):
     # """
