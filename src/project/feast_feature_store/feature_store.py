@@ -83,4 +83,3 @@ def getTrainDataFromFeatureStore():
 
 
 
-getTrainDataFromFeatureStore()

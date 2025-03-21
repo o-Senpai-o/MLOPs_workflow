@@ -16,9 +16,6 @@ from utils import delta_date_feature
 from fastapi.responses import HTMLResponse
 
 
-# from BankNote import nyc
-
-
 app = FastAPI()
 
 
@@ -94,7 +91,7 @@ if __name__ == "__main__":
     from utils import delta_date_feature
 
     # runs the app on localhost of container exposed at port 8000
-    uvicorn.run(app = app, host = '0.0.0.0', port = 8000)
+    uvicorn.run(app = app, host = '127.0.0.1', port = 8000)
 
 
 

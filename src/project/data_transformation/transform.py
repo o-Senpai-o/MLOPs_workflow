@@ -215,17 +215,29 @@ def data_process(path):
     # save the pipeline and the feature names in mlflow registry or aws
 
     #? we track the saved pipeline using DVC
-    artifact_path = Path("MLOPs_workflow/src//project//prod//prod_artifacts")
-    with open(Path(artifact_path, "feat_pipeline.pkl"), 'wb') as file:
-        pickle.dump(feature_transformation_pipeline, file)
+    artifact_path = Path("F:\machine learning\mlops\end to end machine learning pipeline\MLOPs_workflow\src\project\prod\prod_artifacts")
+
+    if os.path.exists(artifact_path):
+        # print(artifact_path)
+        with open(artifact_path.joinpath("feat_pipeline.pkl"), "wb") as file:
+            pickle.dump(feature_transformation_pipeline, file)
+        
+        print("pipeline saved as pickle file")
+    else:
+        # make a directory first then open a file 
+        os.makedirs(artifact_path)
+        with open(artifact_path.joinpath("feat_pipeline.pkl"), 'wb') as file:
+            pickle.dump(feature_transformation_pipeline, file)
+
+        print("artifact directory created and pipeline saved as pickle file ")
     
 
-    # we will also save the feature names
-    features_path = Path("MLOPs_workflow/src//project//prod//prod_artifacts")
-    with open(Path(features_path, "feature_name.pkl"), 'wb') as file:
-        pickle.dump(transformed_features, file)
+    # # we will also save the feature names
+    # features_path = Path("MLOPs_workflow//src//project//prod//prod_artifacts")
+    # with open(Path(features_path, "feature_name"), 'rb') as file:
+    #     pickle.dump(transformed_features, file)
 
-    #? lateer we will track it using the feat pipeline
+    #? later we will track it using the feat pipeline
 
     # feature_transformed_data is a sparse matrix so we create a new dataframe
     features_df = pd.DataFrame(feature_transformed_data, columns= transformed_features)
