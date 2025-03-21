@@ -3,8 +3,10 @@ create the definition of our feature store
 
 definition : 
     1) Entity
+    
     2.1) File Source
     2.2) Feature View
+    
     3.1) File Source
     3.2) Feature View
 
@@ -14,12 +16,12 @@ prerequisites:
         2) same entity 
     
            data1_df                      data2_df                     data3_df                       target
-    ID feat1 feat2 TIMESTAMP     ID feat1 feat2 TIMESTAMP      ID feat1 feat2 TIMESTAMP          ID  TIMESTAMP
-    1   -      -      -            1   -      -      -          1   -      -      -              1      -
-    2   -      -      -            2   -      -      -          2   -      -      -              2      -
-    3   -      -      -            3   -      -      -          3   -      -      -              3      -
-    4   -      -      -            4   -      -      -          4   -      -      -              4      - 
-    5   -      -      -            5   -      -      -          5   -      -      -              5      -    
+    ID feat1 feat2 TIMESTAMP     ID feat1 feat2 TIMESTAMP      ID feat1 feat2 TIMESTAMP          ID  target TIMESTAMP
+    1   -      -      -            1   -      -      -          1   -      -      -              1      -       -
+    2   -      -      -            2   -      -      -          2   -      -      -              2      -       -
+    3   -      -      -            3   -      -      -          3   -      -      -              3      -       -
+    4   -      -      -            4   -      -      -          4   -      -      -              4      -       -
+    5   -      -      -            5   -      -      -          5   -      -      -              5      -       -
 
 
     # target should be a different data file    

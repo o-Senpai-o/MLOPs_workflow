@@ -1,11 +1,12 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-# from fetch_model import getModel
 import os
 import shutil
 from sklearn.metrics import mean_absolute_error 
 import mlflow
+from sklearn.ensemble import RandomForestRegressor
+import pickle
 
 
 from src.project.feast_feature_store.feature_store import getTrainDataFromFeatureStore  
@@ -16,22 +17,22 @@ from src.project.feast_feature_store.feature_store import getTrainDataFromFeatur
 
 
 
-# def train(args):
-    # """
-    # Trains model on training data
+def train():
+    """
+    Trains model on training data
 
-    # Args:
-    #     inputs:
-    #     ------------
-    #     argument_parser : 
-    #         configs : dict = configuration for models
+    Args:
+        inputs:
+        ------------
+        argument_parser : 
+            configs : dict = configuration for models
         
             
-    #     output:
-    #     ------------
-    #     None
+        output:
+        ------------
+        None
     
-    # """
+    """
 
     # Get the Random Forest configuration
 
@@ -41,37 +42,46 @@ from src.project.feast_feature_store.feature_store import getTrainDataFromFeatur
     # get the training data from the feature store first
     # logger.info("Downloading training set artifact from feature store")
 
-    # # retrieve the training data from feature store
-    # data = getTrainDataFromFeatureStore()
+    # retrieve the training data from feature store
+    data = getTrainDataFromFeatureStore()
 
-    # print(data.head())
+    print(data.shape)
 
 
-    # # read the training data
-    # X = data
-    # y = X.pop("price")  # this removes the column "price" from X and puts it into y
+    # read the training data
+    X = data
+    y = X.pop("price")  # this removes the column "price" from X and puts it into y
 
-    # # there are some features which are not required for model training 
-    # # like event_timestamp, 
-    # X = X.drop(["event_timestamp"], axis = 1)
+    # there are some features which are not required for model training 
+    # like event_timestamp, 
+    X = X.drop(["event_timestamp"], axis = 1)
     
-    # # split the data into train and test data
-    # X_train, X_val, y_train, y_val = train_test_split(
-    #                         X, y, test_size = args.val_size,
-    #                         stratify = X[args.stratify_by],
-    #                         random_state = args.random_seed
-    #                     )
+    # split the data into train and test data
+    X_train, X_val, y_train, y_val = train_test_split(
+                            X, y, test_size = 0.2,
+                            random_state = 445
+                        )
 
 
-    # # get te model for training 
-    # # get the configs for random forest model
-    # model = getModel(model_name= "random_forest", configs = args.configs)        
+    # get te model for training 
+    # get the configs for random forest model
+    model = RandomForestRegressor(
+                                n_estimators = 150 ,
+                                max_depth = 15,
+                                min_samples_split = 4,
+                                min_samples_leaf = 3,
+                                n_jobs = -1,
+                                criterion = 'absolute_error',
+                                max_features = 0.5,
+                                oob_score =True
+                                )
 
+
+    model.fit(X_train, y_train)
     # # Then fit it to the X_train, y_train data
     # # Fit the pipeline full_pipeline (will transform and train the data )
     # #! per yaar data toh humara feature store se aaya hai toh pipeline se fit kyu kare
     # #! khali model se fit karna chaheye
-    # model.fit(X_train, y_train)
 
     # # Compute r2 and MAE
     # logger.info("Scoring")
@@ -102,6 +112,8 @@ from src.project.feast_feature_store.feature_store import getTrainDataFromFeatur
     # #     input_example=X_val.iloc[:5]
     # # )
 
+    filename = 'F://machine learning//mlops//end to end machine learning pipeline//MLOPs_workflow//src//project//prod//prod_artifacts//random_forest_model.pkl'
+    pickle.dump(model, open(filename, 'wb'))
     
 
 
@@ -111,6 +123,6 @@ from src.project.feast_feature_store.feature_store import getTrainDataFromFeatur
 
 
 
-data = getTrainDataFromFeatureStore()
 
-print(data.head())
+if __name__ == "__main__":
+    train()

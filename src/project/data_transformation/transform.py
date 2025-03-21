@@ -28,7 +28,6 @@ def delta_date_feature(dates):
     max_dates = dates['last_review'].max()
     return dates['last_review'].apply(lambda d : (max_dates - d)).dt.days.fillna(max_dates).to_numpy().reshape(-1, 1)
 
-
 def ravel_text_column(x):
     return x.ravel()
 
@@ -111,7 +110,6 @@ def get_feature_transformation_pipeline():
 
     return feature_transformation_pipeline, processed_features, new_features
 
-
 def create_feast_dataframe(data):
 
     # get the Id and target columns separately
@@ -124,24 +122,24 @@ def create_feast_dataframe(data):
 
 
     # create 4 different dataframes for 4 sources of features
-    # first_df_columns = columns[0:5]
-    # second_df_columns = columns[5:9]
-    # third_df_columns = columns[9:13]
-    # forth_df_columns = columns[13:19]
+    first_df_columns = columns[0:5]
+    second_df_columns = columns[5:9]
+    third_df_columns = columns[9:13]
+    forth_df_columns = columns[13:19]
 
 
     # create 4 separate dataframe
-    # data_1 = data[first_df_columns]
-    # data_2 = data[second_df_columns]
-    # data_3 = data[third_df_columns]
-    # data_4 = data[forth_df_columns]
+    data_1 = data[first_df_columns]
+    data_2 = data[second_df_columns]
+    data_3 = data[third_df_columns]
+    data_4 = data[forth_df_columns]
 
 
     # add Ids to each dataframe
-    # data_1_w_id = pd.concat([data_1, Ids], axis = 1)
-    # data_2_w_id = pd.concat([data_2, Ids], axis = 1)
-    # data_3_w_id = pd.concat([data_3, Ids], axis = 1)
-    # data_4_w_id = pd.concat([data_4, Ids], axis = 1)
+    data_1_w_id = pd.concat([data_1, Ids], axis = 1)
+    data_2_w_id = pd.concat([data_2, Ids], axis = 1)
+    data_3_w_id = pd.concat([data_3, Ids], axis = 1)
+    data_4_w_id = pd.concat([data_4, Ids], axis = 1)
 
     # add iD and time stamo to target also
     target_df_w_id = pd.concat([target_df, Ids], axis = 1)
@@ -154,10 +152,10 @@ def create_feast_dataframe(data):
         freq='D').to_frame(name="event_timestamp", index=False)
 
 
-    # data_1_id_ts = pd.concat([data_1_w_id, timestamps], axis = 1)
-    # data_2_id_ts = pd.concat([data_2_w_id, timestamps], axis = 1)
-    # data_3_id_ts = pd.concat([data_3_w_id, timestamps], axis = 1)
-    # data_4_id_ts = pd.concat([data_4_w_id, timestamps], axis = 1)
+    data_1_id_ts = pd.concat([data_1_w_id, timestamps], axis = 1)
+    data_2_id_ts = pd.concat([data_2_w_id, timestamps], axis = 1)
+    data_3_id_ts = pd.concat([data_3_w_id, timestamps], axis = 1)
+    data_4_id_ts = pd.concat([data_4_w_id, timestamps], axis = 1)
 
     # add iD and time stamo to target also
     target_df_id_ts = pd.concat([target_df_w_id, timestamps], axis = 1)
@@ -169,13 +167,11 @@ def create_feast_dataframe(data):
 
 
     # feast expects data to be in parquet format
-    # data_1_id_ts.to_parquet(Path(f"{file_direc}//data_1.parquet"), index=False)
-    # data_2_id_ts.to_parquet(Path(f"{file_direc}//data_2.parquet"), index=False)
-    # data_3_id_ts.to_parquet(Path(f"{file_direc}//data_3.parquet"), index=False)
-    # data_4_id_ts.to_parquet(Path(f"{file_direc}//data_4.parquet"), index=False)
-
-    target_df_id_ts.to_parquet(Path(f"{file_direc}//target.parquet"), index=False)
-
+    data_1_id_ts.to_parquet(file_direc.joinpath("data_1.parquet"), index=False)
+    data_2_id_ts.to_parquet(file_direc.joinpath("data_2.parquet"), index=False)
+    data_3_id_ts.to_parquet(file_direc.joinpath("data_3.parquet"), index=False)
+    data_4_id_ts.to_parquet(file_direc.joinpath("data_4.parquet"), index=False)
+    target_df_id_ts.to_parquet(file_direc.joinpath("target.parquet"), index=False)
 
 def data_process(path):
     """
@@ -237,8 +233,11 @@ def data_process(path):
     # third: version control the data on google drive but include the code to do the same for AWS S3  
 
 
-data_path = Path("F://machine learning//mlops//end to end machine learning pipeline//MLOPs_workflow//data//raw//AB_NYC_2019.csv")
 
-data_process(data_path)
+
+if __name__ == "__main__":
+    data_path = Path("F://machine learning//mlops//end to end machine learning pipeline//MLOPs_workflow//data//raw//AB_NYC_2019.csv")
+
+    # data_process(data_path)
 
 
