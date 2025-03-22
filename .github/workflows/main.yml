@@ -110,7 +110,7 @@ jobs:
             echo ""
   
             echo "----- git status -----"
-            git remote set-url origin https://oauth2:${{ secrets.GH_PAT }}@github.com/o-Senpai-o/MLOPs_workflow.git
+            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/o-Senpai-o/MLOPs_workflow.git
             git add k8_/deployment.yaml
             git commit -m 'Done  by Github Actions  Job change manifest: ${{ github.run_number }}'
             git push origin master
