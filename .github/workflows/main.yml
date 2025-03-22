@@ -26,20 +26,14 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-        #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        #   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}             replaced with OIDC process no need to store secrets in github actions
-            
-            role-to-assume: arn:aws:iam::579989520040:role/github_actions  
-            aws-region: eu-north-1
+          # replaced with OIDC process no need to store secrets in github actions
+          role-to-assume: arn:aws:iam::579989520040:role/github_actions  
+          aws-region: eu-north-1
 
       - name: setup DVC
         uses: iterative/setup-dvc@v1
         
-      - name: fetch sklearn model sklearn pipeline pipeline features
-        # env:
-        #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        #   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        #   aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: fetch sklearn_model sklearn_pipeline pipeline_features
         run: |
           dvc pull src/project/prod/prod_artifacts/feat_pipeline.pkl.dvc 
           dvc pull src/project/prod/prod_artifacts/feature_name.pkl.dvc 
@@ -48,17 +42,7 @@ jobs:
       - name: List Files
         run: ls -l src/project/prod/prod_artifacts
 
-          
-#       #   # for use of aws features
-#       # - name: Configure AWS Credentials
-#       #   uses: aws-actions/configure-aws-credentials@v1
-#       #   with:
-#       #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#       #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#       #     aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-
-
-      
+        
         # build the Docker container
       - name: Build container
         run: |
@@ -68,12 +52,9 @@ jobs:
       - name: Push2ECR
         id: ecr
         uses: jwalton/gh-ecr-push@v1
-        # with:
-        #   access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        #   secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        #   region: ${{ secrets.AWS_DEFAULT_REGION }}
-
+        with:
           image: mlops:latest
+
 
       - name: Build and push
         uses: docker/build-push-action@v5
