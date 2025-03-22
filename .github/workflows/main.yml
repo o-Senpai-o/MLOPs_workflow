@@ -71,45 +71,7 @@ jobs:
         run: |
           ls -l
           pwd 
-        
-     
-      
-      - name: modify the deployment file
-        run: |
-          git config user.email $GIT_EMAIL
-          git config user.name $GIT_NAME
-          git checkout master
-          git pull origin master
-          echo "----- Current Directory -----"
-          pwd
-          echo ""
 
-          echo "----- current deploy file data -----"
-          cat k8_/deployment.yaml
-          echo ""
-
-          echo "----- Run number: $RUN_NUMBER -----"
-          echo "Run number: $RUN_NUMBER"
-          echo ""
-          
-          echo "----- Replace the image tag in the deployment file -----"
-          sed -i "s|mlops:app-[0-9]\+|mlops:app-$RUN_NUMBER|g" k8_/deployment.yaml
-          echo ""
-
-          echo "----- Updated deploy file data -----"
-          cat k8_/deployment.yaml
-          echo ""
-
-          echo "----- git status -----"
-          git add k8_/deployment.yaml
-          git commit -m 'Done  by Github Actions  Job change manifest: ${{ github.run_number }}'
-          git push origin master
-        env:
-          GIT_USERNAME: ${{ secrets.GIT_NAME }}
-          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
-          RUN_NUMBER: ${{ github.run_number }}
-          GIT_EMAIL : ${{ secrets.GIT_EMAIL }}
-          GIT_NAME : ${{ secrets.GIT_NAME }}
 
 
 
