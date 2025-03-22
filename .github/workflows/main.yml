@@ -67,7 +67,12 @@ jobs:
               
       
       #update the deployment file so that Argocd can track changes in the deployment file
-      
+      - name: List Files
+        run: |
+          ls -l
+          pwd 
+          
+
       - name: modify the deployment file
         run: |
           git config user.email $GIT_EMAIL
