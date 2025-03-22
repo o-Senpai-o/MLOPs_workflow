@@ -113,7 +113,7 @@ jobs:
             git remote set-url origin https://${{ secrets.GH_PAT }}@github.com/o-Senpai-o/MLOPs_workflow.git
             git add .
             git commit -m 'Done  by Github Actions  Job change manifest: ${{ github.run_number }}'
-            git push origin master
+            git push 
         env:
             GIT_NAME: ${{ secrets.GIT_NAME }}
             GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
