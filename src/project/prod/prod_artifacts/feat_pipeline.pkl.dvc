@@ -1,0 +1,5 @@
+outs:
+- md5: 6589cee7df4c6817d2a514dfe8846187
+  size: 6554
+  hash: md5
+  path: feat_pipeline.pkl

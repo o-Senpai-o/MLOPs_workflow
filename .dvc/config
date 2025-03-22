@@ -1,6 +1,5 @@
 [core]
-    remote = model_store
-['remote "mlproject-model-artifacts"']
-    url = s3://mlproject-model-artifacts
-['remote "model_store"']
-    url = s3://mlproject-model-artifacts
+    remote = mlartifactsartifacts
+
+['remote "mlartifactsartifacts"']
+    url = s3://mlartifactsdvc

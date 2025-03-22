@@ -1,45 +1,52 @@
-# name: Create Docker Container
+name: Create Docker Container
 
-# on: [push]
+on: [push]
 
-# jobs:
-#   mlops-container:
-#     runs-on: ubuntu-latest
-#     defaults:
-#       run:
-#         working-directory: ./
-#     steps:
-#         # This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
-#       - name: Checkout
-#         uses: actions/checkout@v2
-#         with:
-#           ref: ${{ github.ref }}
+permissions:
+    id-token: write # This is required for requesting the JWT
+    contents: read  # This is required for actions/checkout
+
+jobs:
+  mlops-container:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+      
+    steps:
+        # This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
           
-#       # - name: List Files
-#       #   run: ls -l
+      - name: List Files
+        run: ls -l
 
-#       - name: Configure AWS Credentials
-#         uses: aws-actions/configure-aws-credentials@v1
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+        #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        #   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}             replaced with OIDC process no need to store secrets in github actions
+            
+            role-to-assume: arn:aws:iam::579989520040:role/github_actions  
+            aws-region: eu-north-1
 
-#       - name: setup DVC
-#         uses: iterative/setup-dvc@v1
+      - name: setup DVC
+        uses: iterative/setup-dvc@v1
         
-#       - name: fetch sklearn model sklearn pipeline pipeline features
-#         env:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-#         run: |
-#           dvc pull src/project/prod/prod_artifacts/feat_pipeline.pkl.dvc 
-#           dvc pull src/project/prod/prod_artifacts/feature_name.pkl.dvc 
-#           dvc pull src/project/prod/prod_artifacts/random_forest_model.pkl.dvc 
+      - name: fetch sklearn model sklearn pipeline pipeline features
+        # env:
+        #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        #   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        #   aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+        run: |
+          dvc pull src/project/prod/prod_artifacts/feat_pipeline.pkl.dvc 
+          dvc pull src/project/prod/prod_artifacts/feature_name.pkl.dvc 
+          dvc pull src/project/prod/prod_artifacts/random_forest_model.pkl.dvc 
 
-#       - name: List Files
-#         run: ls -l src/project/prod/prod_artifacts
+      - name: List Files
+        run: ls -l src/project/prod/prod_artifacts
 
           
 #       #   # for use of aws features
@@ -52,46 +59,46 @@
 
 
       
-#         # build the Docker container
-#       # - name: Build container
-#       #   run: |
-#       #     docker build -t mlops:latest . --progress=plain --no-cache
+        # build the Docker container
+      - name: Build container
+        run: |
+          docker build -t mlops:latest . --progress=plain --no-cache
      
-      
-#       # - name: Push2ECR
-#       #   id: ecr
-#       #   uses: jwalton/gh-ecr-push@v1
-#       #   with:
-#       #     access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#       #     secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#       #     region: ${{ secrets.AWS_DEFAULT_REGION }}
+        # push the Docker container to ECR
+      - name: Push2ECR
+        id: ecr
+        uses: jwalton/gh-ecr-push@v1
+        # with:
+        #   access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        #   secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        #   region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-#       #     image: mlops:latest
+          image: mlops:latest
 
-#       - name: Build and push
-#         uses: docker/build-push-action@v5
-#         with:
-#             context: .
-#             push: true
-#             tags: singh/images:app-${{ github.run_number }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+            context: .
+            push: true
+            tags: singh/images:app-${{ github.run_number }}
       
-#       #update the deployment file so that Argocd can track changes in the deployment file
+      #update the deployment file so that Argocd can track changes in the deployment file
       
-#       - name: modify the deployment file
-#         run: |
-#           git config user.email $GIT_EMAIL
-#           git config user.name $GIT_NAME
-#           pwd
-#           cat k8_/deployment.yaml
-#           pwd
-#           sed -i "s+singh/images.*+singh/images:app-$RUN_NUMBER+g" deployment.yaml
-#           cat deployment.yaml
-#           git add .
-#           git commit -m 'Done  by Github Actions   Job changemanifest: ${{ github.run_number }}'
-#           git push origin main
-#         env:
-#           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-#           GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
-#           RUN_NUMBER: ${{ github.run_number }}
-#           GIT_EMAIL : ${{ secrets.GIT_EMAIL }}
-#           GIT_NAME : ${{ secrets.GIT_NAME }}
+      - name: modify the deployment file
+        run: |
+          git config user.email $GIT_EMAIL
+          git config user.name $GIT_NAME
+          pwd
+          cat k8_/deployment.yaml
+          pwd
+          sed -i "s+singh/images.*+singh/images:app-$RUN_NUMBER+g" deployment.yaml
+          cat deployment.yaml
+          git add .
+          git commit -m 'Done  by Github Actions  Job change manifest: ${{ github.run_number }}'
+          git push origin main
+        env:
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+          RUN_NUMBER: ${{ github.run_number }}
+          GIT_EMAIL : ${{ secrets.GIT_EMAIL }}
+          GIT_NAME : ${{ secrets.GIT_NAME }}
