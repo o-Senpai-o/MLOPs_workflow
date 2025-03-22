@@ -77,12 +77,28 @@ jobs:
         run: |
           git config user.email $GIT_EMAIL
           git config user.name $GIT_NAME
+          echo "----- Current Directory -----"
           pwd
+          echo ""
+
+          echo "----- current deploy file data -----"
           cat k8_/deployment.yaml
-          pwd
-          sed -i "s+mlops:app-[0-9]\++mlops:app-$RUN_NUMBER+g" k8_/deployment.yaml
+          echo ""
+
+          echo "----- Run number: $RUN_NUMBER -----"
+          echo "Run number: $RUN_NUMBER"
+          echo ""
+          
+          echo "----- Replace the image tag in the deployment file -----"
+          sed -i "s|mlops:app-[0-9]\+|mlops:app-$RUN_NUMBER|g" k8_/deployment.yaml
+          echo ""
+
+          echo "----- Updated deploy file data -----"
           cat k8_/deployment.yaml
-          git add .
+          echo ""
+
+          echo "----- git status -----"
+          git add k8_/deployment.yaml
           git commit -m 'Done  by Github Actions  Job change manifest: ${{ github.run_number }}'
           git push origin main
         env:
