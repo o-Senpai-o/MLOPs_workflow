@@ -42,19 +42,6 @@ jobs:
       - name: List Files
         run: ls -l src/project/prod/prod_artifacts
 
-        
-        # build the Docker container
-      - name: Build container
-        run: |
-          docker build -t mlops:latest . --progress=plain --no-cache
-     
-        # push the Docker container to ECR
-      - name: Push2ECR
-        id: ecr
-        uses: jwalton/gh-ecr-push@v1
-        with:
-          image: mlops:latest
-
 
       - name: Build and push
         uses: docker/build-push-action@v5
