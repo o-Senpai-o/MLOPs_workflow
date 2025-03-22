@@ -32,9 +32,6 @@ jobs:
       
       - name: Install DVC
         run: pip install dvc[s3]
-
-      - name: setup DVC
-        uses: iterative/setup-dvc@v1
         
       - name: fetch sklearn_model sklearn_pipeline pipeline_features
         run: |
