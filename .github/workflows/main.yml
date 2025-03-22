@@ -100,7 +100,7 @@ jobs:
           echo "----- git status -----"
           git add k8_/deployment.yaml
           git commit -m 'Done  by Github Actions  Job change manifest: ${{ github.run_number }}'
-          git push origin main
+          git push origin master
         env:
           GIT_USERNAME: ${{ secrets.GIT_NAME }}
           GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
