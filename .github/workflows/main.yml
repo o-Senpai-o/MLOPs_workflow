@@ -82,8 +82,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: master
-          fetch-depth: 0
+          ref: ${{ github.ref }}
       - name: modify the deployment file
         run: |
             git config --global user.email $GIT_EMAIL
