@@ -50,7 +50,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: singh/images:app-${{ github.run_number }}.amazonaws.com/mlops:latest
+          tags: mlops:latest
               
       
       #update the deployment file so that Argocd can track changes in the deployment file
