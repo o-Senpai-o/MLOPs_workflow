@@ -29,6 +29,9 @@ jobs:
           # replaced with OIDC process no need to store secrets in github actions
           role-to-assume: arn:aws:iam::579989520040:role/github_actions  
           aws-region: eu-north-1
+      
+      - name: Install DVC
+        run: pip install dvc[s3]
 
       - name: setup DVC
         uses: iterative/setup-dvc@v1
