@@ -71,7 +71,7 @@ jobs:
         run: |
           ls -l
           pwd 
-          
+        
 
       - name: modify the deployment file
         run: |
@@ -80,7 +80,7 @@ jobs:
           pwd
           cat k8_/deployment.yaml
           pwd
-          sed -i "s+mlops:app-[0-9]\++mlops:app-$RUN_NUMBER+g" deployment.yaml
+          sed -i "s+mlops:app-[0-9]\++mlops:app-$RUN_NUMBER+g" k8_/deployment.yaml
           cat k8_/deployment.yaml
           git add .
           git commit -m 'Done  by Github Actions  Job change manifest: ${{ github.run_number }}'
