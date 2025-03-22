@@ -82,7 +82,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          ref: master
+          fetch-depth: 0
       - name: modify the deployment file
         run: |
             git config --global user.email $GIT_EMAIL
@@ -110,8 +111,8 @@ jobs:
             echo ""
   
             echo "----- git status -----"
-            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/o-Senpai-o/MLOPs_workflow.git
-            git add k8_/deployment.yaml
+            git remote set-url origin https://${{ secrets.GH_PAT }}@github.com/o-Senpai-o/MLOPs_workflow.git
+            git add .
             git commit -m 'Done  by Github Actions  Job change manifest: ${{ github.run_number }}'
             git push origin master
         env:
