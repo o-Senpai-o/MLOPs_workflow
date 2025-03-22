@@ -42,21 +42,22 @@ jobs:
       - name: List Files
         run: ls -l src/project/prod/prod_artifacts
         
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+      
+        # build the Docker container
+      - name: Build container
+        run: |
+          docker build -t mlops:app-${{ github.run_number }} . --progress=plain --no-cache
+     
+      
+      - name: Push2ECR
+        id: ecr
+        uses: jwalton/gh-ecr-push@v1
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: mlops:latest
+          image: mlops:app-${{ github.run_number }} 
               
       
       #update the deployment file so that Argocd can track changes in the deployment file
