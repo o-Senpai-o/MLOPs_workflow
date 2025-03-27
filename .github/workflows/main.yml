@@ -83,6 +83,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false  # Important: Disable default GitHub credentials
       - name: modify the deployment file
         run: |
             git config --global user.email $GIT_EMAIL
@@ -110,8 +111,8 @@ jobs:
             echo ""
   
             echo "----- git status -----"
-            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT2 }}@github.com/o-Senpai-o/MLOPs_workflow.git
-            git add .
+            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/o-Senpai-o/MLOPs_workflow.git
+            git add *
             git commit -m 'Done  by Github Actions  Job change manifest: ${{ github.run_number }}'
             git push origin main
         env:
