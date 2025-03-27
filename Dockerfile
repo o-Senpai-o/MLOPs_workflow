@@ -30,5 +30,5 @@ RUN pip install -r requirements.txt
 # USER appuser
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "80"]
 # CMD ["python", "test_pipeline.py"]
