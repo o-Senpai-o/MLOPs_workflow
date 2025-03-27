@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: mlops
-          image: mlops:app-60
+          image: mlops:app-61
           ports:
             - containerPort: 8000
           resources:
