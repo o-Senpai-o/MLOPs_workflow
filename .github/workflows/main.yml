@@ -83,7 +83,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
-          persist-credentials: false  # Important: Disable default GitHub credentials
+          persist-credentials: false  # Important: Disable default GitHub credentials, adding this made the workflow work 
       - name: modify the deployment file
         run: |
             git config --global user.email $GIT_EMAIL
@@ -95,7 +95,7 @@ jobs:
             echo ""
   
             echo "----- current deploy file data -----"
-            cat k8_/deployment.yaml
+            cat k8_/app_service_ingress.yaml
             echo ""
   
             echo "----- Run number: $RUN_NUMBER -----"
@@ -103,11 +103,11 @@ jobs:
             echo ""
             
             echo "----- Replace the image tag in the deployment file -----"
-            sed -i "s|mlops:app-[0-9]\+|mlops:app-$RUN_NUMBER|g" k8_/deployment.yaml
+            sed -i "s|579989520040.dkr.ecr.eu-north-1.amazonaws.com/mlops:app-[0-9]\+|579989520040.dkr.ecr.eu-north-1.amazonaws.com/mlops:app-$RUN_NUMBER|g" k8_/app_service_ingress.yaml
             echo ""
   
             echo "----- Updated deploy file data -----"
-            cat k8_/deployment.yaml
+            cat k8_/app_service_ingress.yaml
             echo ""
   
             echo "----- git status -----"
