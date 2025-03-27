@@ -20,7 +20,7 @@ spec:
         app.kubernetes.io/name: mlopsapp
     spec:
       containers:
-      - image: 579989520040.dkr.ecr.eu-north-1.amazonaws.com/mlops:app-75
+      - image: 579989520040.dkr.ecr.eu-north-1.amazonaws.com/mlops:app-77
         imagePullPolicy: Always
         name: mlopsapp
         resources:
