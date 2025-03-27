@@ -1,6 +1,9 @@
 name: Create Docker Container
 
-on: [push]
+on: 
+  push:
+    paths-ignore:
+      - 'k8_/app_service_ingress.yaml' 
 
 permissions:
     id-token: write # This is required for requesting the JWT
