@@ -20,16 +20,16 @@ spec:
         app.kubernetes.io/name: mlopsapp
     spec:
       containers:
-      - image: 579989520040.dkr.ecr.eu-north-1.amazonaws.com/mlops:app-49
+      - image: 579989520040.dkr.ecr.eu-north-1.amazonaws.com/mlops:app-75
         imagePullPolicy: Always
         name: mlopsapp
         resources:
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "2Gi"
+            cpu: "1"
           requests:
-            memory: "256Mi"
-            cpu: "250m"
+            memory: "2Gi"
+            cpu: "500m"
         ports:
         - containerPort: 80
 
