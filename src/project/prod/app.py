@@ -13,6 +13,9 @@ from utils import *
 
 app = FastAPI()
 
+# curl -X POST -F "file=@AB_NYC_2019.csv" http://localhost:80/predict
+# wget --post-file=test.csv --output-document=- http://localhost:80/predict
+
 
 
 # HTML form for file upload
@@ -74,12 +77,13 @@ def predict(file: UploadFile):
    
 
     # Create HTML table from DataFrame
-    html_table = data.to_html(index=False)
+    html_table = new_data.to_html(index=False)
     print("converted to html table")
 
 
     # Return HTML response with DataFrame table
-    return HTMLResponse(content=html_table)
+    # return HTMLResponse(content=html_table)
+    return {"columns" : new_data['predictions'].values.tolist()}
     
 
 
