@@ -35,9 +35,9 @@ jobs:
         
       - name: fetch sklearn_model sklearn_pipeline pipeline_features
         run: |
-          dvc pull src/project/prod/prod_artifacts/feat_pipeline.pkl.dvc 
-          dvc pull src/project/prod/prod_artifacts/feature_name.pkl.dvc 
-          dvc pull src/project/prod/prod_artifacts/random_forest_model.pkl.dvc 
+          # dvc pull src/project/prod/prod_artifacts/feat_pipeline.pkl.dvc 
+          # dvc pull src/project/prod/prod_artifacts/feature_name.pkl.dvc 
+          dvc pull src/project/prod/prod_artifacts/random_forest_model.dvc 
 
       - name: List Files
         run: ls -l src/project/prod/prod_artifacts
@@ -87,8 +87,8 @@ jobs:
         run: |
             git config --global user.email $GIT_EMAIL
             git config --global user.name $GIT_NAME
-            git checkout master
-            git pull origin master
+            git checkout 
+            git pull origin 
             echo "----- Current Directory -----"
             pwd
             echo ""

@@ -1,16 +1,11 @@
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
-import os
-import shutil
-from sklearn.metrics import mean_absolute_error 
-import mlflow
 from sklearn.ensemble import RandomForestRegressor
-import pickle
-
+import joblib
+from pathlib import Path
 
 from src.project.feast_feature_store.feature_store import getTrainDataFromFeatureStore  
-
+from src.project.data_transformation.pipeline import pipeline
 
 #---------------------------------------------------------------------------------------------------------------
 
@@ -43,18 +38,28 @@ def train():
     # logger.info("Downloading training set artifact from feature store")
 
     # retrieve the training data from feature store
-    data = getTrainDataFromFeatureStore()
+    # data = getTrainDataFromFeatureStore()
 
-    print(data.shape)
+    # print(data.shape)
 
+    data_path = Path(r"data\raw\AB_NYC_2019.csv")
+    artifact_path = Path("src\project\prod\prod_artifacts")
+    
+    data = pd.read_csv(data_path)
+
+    # df = pipeline(data, artifact_path , training=True)
+    # print(df)
+
+    df = pipeline(data, artifact_path , training=False)
+    
 
     # read the training data
-    X = data
-    y = X.pop("price")  # this removes the column "price" from X and puts it into y
+    X = df
+    y = data["price"]  # this removes the column "price" from X and puts it into y
 
     # there are some features which are not required for model training 
     # like event_timestamp, 
-    X = X.drop(["event_timestamp"], axis = 1)
+    # X = X.drop(["event_timestamp"], axis = 1)
     
     # split the data into train and test data
     X_train, X_val, y_train, y_val = train_test_split(
@@ -112,8 +117,10 @@ def train():
     # #     input_example=X_val.iloc[:5]
     # # )
 
-    filename = 'F://machine learning//mlops//end to end machine learning pipeline//MLOPs_workflow//src//project//prod//prod_artifacts//random_forest_model.pkl'
-    pickle.dump(model, open(filename, 'wb'))
+    filename = 'F://machine learning//mlops//end to end machine learning pipeline//MLOPs_workflow//src//project//prod//prod_artifacts//random_forest_model'
+    
+    with open(filename, "wb") as file:
+        joblib.dump(model, file)
     
 
 

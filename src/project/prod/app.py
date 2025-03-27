@@ -1,19 +1,13 @@
-import uvicorn
-import pickle
-import fastapi
-from fastapi import FastAPI, File, UploadFile, HTTPException
-from typing import Annotated
+
+from fastapi import FastAPI, UploadFile
 import pandas as pd
-
-
-from tempfile import NamedTemporaryFile
-from starlette.responses import FileResponse
-from starlette.requests import Request
-
-from src.project.prod.utils import load_feature_transformation_pipeline, load_models
-from src.project.prod.utils import delta_date_feature, ravel_text_column
-
 from fastapi.responses import HTMLResponse
+from utils import * 
+
+
+
+
+
 
 
 
@@ -47,43 +41,46 @@ html_form = """
 # example suppose  the input expects a integer then we can say tye hint as int
 # but what if it should be in the given specific range 
 # this is where Annotated will be used
-  
+BASE_DIR = Path(__file__).resolve().parent
+
+
+
 @app.post("/predict")
 def predict(file: UploadFile):
-    # recieve the file as input from the user
-    data = pd.read_csv(file.file)
-    # return {"columns" : data.columns.tolist()}
+    print(f"Received file: {file.filename}")
+    try:
+        data = pd.read_csv(file.file)
+        print("CSV read successfully!")
+    except Exception as e:
+        return {"error": f"Failed to read CSV: {str(e)}"}
+
+   
+    # ---------------- Pipeline-------------------------
+
+    new_data = pipeline(df= data, path = BASE_DIR / "prod_artifacts", training=False)
+
+
+    #----------------- model ---------------------------
+    model = load_models()
+
+
+
+    # -----------------Prediction---------------------- 
+    predictions = model.predict(new_data)
     
-    feat_id = data['id']
+    new_data["predictions"] = predictions
 
-    # tranform the data into features for our model
-    feature_transform_pipeline , pipeline_features = load_feature_transformation_pipeline()
-
-    transformed_feats = feature_transform_pipeline.transform(data)
-
-    # get the machine learning model from mlflow registry
-    random_model = load_models()
-
-    print("model loaded successfully")
-
-    new_df = pd.DataFrame(transformed_feats, columns=pipeline_features)
-    df = pd.concat([feat_id, new_df], axis=1)
-
-    print("dataset transformed successfully using sklearn pipeline")
-
-    # now make predictions on the data 
-    predictions = random_model.predict(df)
-
-    # we can return the predictions along with the data
-    data["predictions"] = predictions
+    #------------------Response ------------------------
+   
 
     # Create HTML table from DataFrame
     html_table = data.to_html(index=False)
-
     print("converted to html table")
+
 
     # Return HTML response with DataFrame table
     return HTMLResponse(content=html_table)
+    
 
 
 @app.get("/")
@@ -92,37 +89,15 @@ async def main():
 
 
 
-if __name__ == "__main__":
-    # importing the user defined function here to overcome the 
-    # AttributeError: Can't get attribute 'function' on <module '__main__' (built-in)>
-    # from utils import delta_date_feature
-
-    # runs the app on localhost of container exposed at port 8000
-    uvicorn.run(app = app, host = '127.0.0.1', port = 8000)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="127.0.0.1", port=8000)
 
 
 
 
-
-
-
-
-# @app.post('/predict')
-# def hello():
-#     return {"hello" : "whats iup"}
-
-# @app.post("/predict")
-# def predict(data:nyc):
-#     # get all the features
-#     data = data.dict()
-
-#     # get all the features
-#     test_data = get_all_feat_values(data)
-
-#     # download the model from the mlflow registry
-#     model = getModelFromRegistry()
-
-#     # make predictions on the test data
-#     prediction = model.predict(test_data)
-
-#     return {"prediction" : prediction}
+# some debugging tricks :
+# run commands inside docker 
+# docker exec -it <container_id> /bin/bash
+# docker run -it --entrypoint /bin/bash mlops-application 
+# python -X faulthandler test_pipeline.py

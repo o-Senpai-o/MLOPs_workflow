@@ -7,4 +7,4 @@ entry_point:
 
 
     command : >-
-      python transform.py 
+      python data_transform.py 

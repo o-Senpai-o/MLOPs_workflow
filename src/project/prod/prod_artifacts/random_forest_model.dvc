@@ -1,0 +1,5 @@
+outs:
+- md5: 495d40da6283928de29b5426ef6fdf37
+  size: 57178950
+  hash: md5
+  path: random_forest_model
